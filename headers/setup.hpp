@@ -49,11 +49,11 @@ namespace raytrace { namespace setup {
         private:
             static constexpr int RES = 2000;
             double low_, high_;
-            unsigned int res_ {RES};
+            unsigned int res_;
             Spline CDF;
         public:
-            template <class Func>
-            RNG (Func && pdf, double low, double high) : low_(low), high_(high)
+            template <typename fn>
+            RNG (fn && pdf, double low, double high, unsigned int resolution = RES) : low_(low), high_(high), res_(resolution)
             {
                 assert(low_ < high_);
                 std::vector<double> val_, cdf_, pdf_;
@@ -76,7 +76,7 @@ namespace raytrace { namespace setup {
                 CDF = setup::Spline(val_, cdf_);
             }
             
-            template <class Generator>
+            template <typename Generator>
             double operator() (Generator && g) {return CDF.arg(dist(std::forward<Generator>(g))); }
     };
 
@@ -89,8 +89,54 @@ namespace raytrace { namespace setup {
     template<typename T>
     inline constexpr bool is_complex_v = is_complex<T>::value;
 
+    template <
+        typename T,
+        typename = std::enable_if_t<
+            std::is_floating_point_v<T>
+            ||
+            is_complex_v<T>
+        >
+    >
+    class AdapSimpson
+    {
+        private:
+            static constexpr int MAX_IT = 1000;
+            unsigned int iter_ {MAX_IT};
+            double tol_;
+            double low_;
+            double high_;
+            T sum_ {};
+
+            template <typename fn>
+            void integration(fn && func, double a_, double b_)
+            {
+                T s1_ = (b_ - a_) / 6.0 * (func(a_) + 4.0 * func((b_ + a_) / 2.0) + func(b_));
+                T s2_ = (b_ - a_) / 12.0 * (func(a_) + 4.0 * func((3 * a_ + b_) / 4.0) + 2.0 * func((a_ + b_) / 2.0) + 4.0 * func((a_ + 3 * b_) / 4.0) + func(b_));
+                if(--iter_ <= 0 || abs(s2_ - s1_) <= 15.0 * (b_ - a_) * tol_)
+                    sum_ += s2_;
+                else
+                {
+                    integration(func, a_, (b_ + a_) / 2.0);
+                    integration(func, (b_ + a_) / 2.0, b_);
+                }
+            }      
+        public:
+            template <typename fn>
+            AdapSimpson(fn && func, double low, double high, double point, double tolerance = 1e-4) : tol_(tolerance), low_(low), high_(high)
+            {
+                assert(low_ < point);
+                assert(point < high_);
+                integration(func, low_, point);
+                integration(func, point, high_);
+            }
+            template <typename fn>
+            AdapSimpson(fn && func, double low, double high) : AdapSimpson(func, low, high, (low + high) / 2.0) {}
+            T result() const {return sum_; }
+            unsigned int iterations() const {return MAX_IT - iter_; }
+    };
+
     template<class Func, class InputIt, class ... InputIts>
-    void transform(Func func, InputIt first, InputIt last, InputIts &&... firsts)
+    void transform(Func func, InputIt first, InputIt last, InputIts... firsts)
     {
         while (first != last)
             func(*first++, (*firsts++)...);

@@ -102,7 +102,7 @@ double Spline::funcval (double x) const
 
 double Spline::deriv (double x) const
 {
-    assert (x >= SplineVec::front().x && x <= SplineVec::back().x);
+    assert (x >= SplineVec::begin()->x && x <= SplineVec::back().x);
     auto pt2 = lower_bound(SplineVec::begin(), SplineVec::end(), SplineSet(x));
     if (x == pt2->x)
         return pt2->k;

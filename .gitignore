@@ -1,4 +1,5 @@
 /build_mint/*
 /build_osx/*
 /build_ubuntu/*
+/build_linux/*
 *.code-workspace

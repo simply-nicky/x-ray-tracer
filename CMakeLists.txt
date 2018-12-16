@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
-project(raytrace_build VERSION 1.0 LANGUAGES CXX)
+project(raytrace_build VERSION 1.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 # set(Boost_DEBUG 1)
@@ -33,25 +33,25 @@ find_package(Boost 1.66 REQUIRED COMPONENTS filesystem program_options system)
 if(Boost_FOUND)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 add_subdirectory(src)
-add_executable(raytrace main.cpp)
-target_link_libraries(raytrace ${Boost_LIBRARIES} sources)
+# add_executable(raytrace main.cpp)
+# target_link_libraries(raytrace ${Boost_LIBRARIES} sources)
 add_executable(Test test.cpp)
 target_link_libraries(Test sources)
 add_custom_command(
-                TARGET raytrace POST_BUILD
+                TARGET Test POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
                         ${CMAKE_SOURCE_DIR}/Al2O3.txt 
                         ${CMAKE_CURRENT_BINARY_DIR}/Al2O3.txt
                  )
-add_custom_command(
-                TARGET raytrace POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                        ${CMAKE_SOURCE_DIR}/config.ini
-                        ${CMAKE_CURRENT_BINARY_DIR}/config.ini
-                 )
+# add_custom_command(
+#                 TARGET Test POST_BUILD
+#                 COMMAND ${CMAKE_COMMAND} -E copy
+#                         ${CMAKE_SOURCE_DIR}/config.ini
+#                         ${CMAKE_CURRENT_BINARY_DIR}/config.ini
+#                 )
 if(UNIX AND NOT APPLE)
 find_package(Threads REQUIRED)
-target_link_libraries(raytrace Threads::Threads)
+# target_link_libraries(raytrace Threads::Threads)
 target_link_libraries(Test Threads::Threads)
 endif()
 endif()
