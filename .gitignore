@@ -1,0 +1,4 @@
+.DS_Store
+/build_mint/*
+/build_osx/*
+/build_ubuntu/*
