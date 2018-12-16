@@ -29,6 +29,7 @@ if (UNIX OR WIN32)
 set(Boost_USE_STATIC_LIBS TRUE)
 endif()
 find_package(Boost 1.66 REQUIRED COMPONENTS filesystem program_options system)
+# find_library(ARB NAMES arb libarb)
 
 if(Boost_FOUND)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})

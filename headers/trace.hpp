@@ -31,6 +31,7 @@ namespace raytrace {
             double alpha_;                                              //alpha parameter in PSD ABC model
 
             double k(double wl) const {return 2 * Constants::pi / wl; }
+            double PSD2D_quad(double fx, double th0, double wl) const;
         public:
             Surface(double RMSHeight = Constants::RMSHeight,
             double CorrLength = Constants::CorrLength, double alpha = Constants::alpha, const std::string & str = "Al2O3.txt");

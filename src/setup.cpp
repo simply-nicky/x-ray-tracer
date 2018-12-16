@@ -3,6 +3,17 @@
 
 namespace raytrace{ namespace setup{
 
+// std::complex<double> hyp_geom_2f1(double a, double b, double c, double x)
+// {
+//     long prec = 32;
+//     acb_t aa, bb, cc, xx, rr;
+//     acb_init(aa); acb_init(bb); acb_init(cc); acb_init(xx); acb_init(rr);
+//     acb_set_d(aa, a); acb_set_d(bb, b); acb_set_d(cc, c); acb_set_d(xx, x);
+//     acb_hypgeom_2f1(rr, aa, bb, cc, xx, 0, prec);
+//     return std::complex<double> {arf_get_d(arb_midref(acb_realref(rr)), ARF_RND_DOWN), arf_get_d(arb_midref(acb_imagref(rr)), ARF_RND_DOWN)};
+//     acb_clear(aa); acb_clear(bb); acb_clear(cc); acb_clear(xx); acb_clear(rr);
+// }
+
 // SplineSet
 std::ostream & operator<< (std::ostream & os, const SplineSet & spl) noexcept
 {

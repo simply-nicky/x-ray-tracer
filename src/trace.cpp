@@ -67,9 +67,23 @@ double Surface::PSD2D (double p1, double p2) const noexcept
     return 1e-6 * pow(CorrLength_, 2) * pow(RMSHeight_, 2) * alpha_ / Constants::pi / pow(1.0 + (p1 * p1 + p2 * p2) * pow(CorrLength_, 2), 1.0 + alpha_);
 }
 
+double Surface::PSD2D_quad(double fx, double th0, double wl) const
+{
+   return alpha_ * pow(CorrLength_ * RMSHeight_, 2) / 5e5 / Constants::pi / wl / pow(1.0 + pow(fx * CorrLength_, 2), 1.0 + alpha_) / sqrt(1.0 + pow(CorrLength_ / wl, 2) * (1.0 - pow(fx * wl + cos(th0), 2)) / (1.0 + pow(fx * CorrLength_, 2))) * sqrt(1.0 - pow(fx * wl + cos(th0), 2));
+}
+
 double Surface::TIS(double th0, double wl) const
 {
-    return Rf(th0, wl) * (1.0 - exp(-pow(4 * Constants::pi * RMSHeight_ * sin(th0) / wl, 2)));
+    double int_ =  setup::AdapSimpson1D<double>(
+            [this, th0, wl](double fx){return PSD2D_quad(fx, th0, wl); },
+            -(1.0 + cos(th0)) / wl,
+            (1.0 - cos(th0)) / wl,
+            setup::AdapSimpson1D<double>::TOL,
+            -1.0 / CorrLength_ / sqrt(1 + alpha_),
+            0.0,
+            1.0 / CorrLength_ / sqrt(1 + alpha_)
+        ).result();
+    return Rf(th0, wl) * (1.0 - exp(-pow(4 * Constants::pi * 1e3 *sqrt(int_) * sin(th0) / wl, 2)));
 }
 
 double Surface::Indicatrix1D (double th, double th0, double wl) const
