@@ -1,5 +1,8 @@
-# raytrace-project
-X-ray tracer for concave mirrors written in C++.
+# X-ray tracer project
+X-ray tracer for concave mirrors written in C++ by Nikolay Ivanov.
+
+For more info regarding the theory behind this see the article written by me:
+https://www.overleaf.com/read/brmnjkbxwzqj
 
 ## compilation:
 
