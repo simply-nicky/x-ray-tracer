@@ -152,19 +152,19 @@ Vector Intersection::scat_vec(const Surface & surf, double wl) const
 }
 
 
-// Ellipsoid
-double Ellipsoid::Delta(const Line & line) const noexcept
+// ObjEllipsoid
+double ObjEllipsoid::Delta(const Line & line) const noexcept
 {
-    Vector v1_ = inv_rad_ * line.direction();
-    Vector v2_ = inv_rad_ * Vector(center_, line.point());
+    Vector v1_ = axes() * line.direction();
+    Vector v2_ = axes() * Vector(center(), line.point());
     return pow(v1_ * v2_, 2) - v1_.Abs() * (v2_.Abs() - 1.0);
 }
 
-std::vector<Point> Ellipsoid::find_intersect(const Line & line) const noexcept
+std::vector<Point> ObjEllipsoid::find_intersect(const Line & line) const noexcept
 {
     std::vector<Point> pts_ {};
-    Vector v1_ = inv_rad_ * line.direction();
-    Vector v2_ = inv_rad_ * Vector(center_, line.point());
+    Vector v1_ = axes() * line.direction();
+    Vector v2_ = axes() * Vector(center(), line.point());
     pts_ = std::vector<Point>
     {
         line.point() + ((- v1_ * v2_ + sqrt(pow(v1_ * v2_, 2) - v1_.Abs() * (v2_.Abs() - 1.0))) / v1_.Abs()) * line.direction(),
@@ -194,9 +194,12 @@ std::vector<Point> & BaseEllipsoid::check_pts(std::vector<Point> & pts, const Li
     return pts;
 }
 
-Point BaseEllipsoid::make_point(double theta, double r) const
+Point BasePlane::make_point(double theta, double r) const
 {
-    return center() + r * sqrt(1.0 - pow(Vector(center(), planes().front().center()) * planes().front().normal(), 2) / pow((radius() * planes().front().normal()) * planes().front().normal(), 2)) * radius() * (RotationMatrix(theta, planes().front().normal()) * (Matrix(Vector(0.0, 0.0, 1.0), Vector(1.0, 0.0, 0.0), Vector(0.0, 1.0, 0.0)) * planes().front().normal()));
+    auto plane_center_ = projection(obj_.center());
+    auto radius_ = sqrt(1.0 - pow(obj_.axes() * normal() * normal(), 2) * Vector(plane_center_, obj_.center()).Abs()) * Matrix(1.0 / obj_.axes()[0].x_comp(), 1.0 / obj_.axes()[1].y_comp(), 1.0 / obj_.axes()[2].z_comp());
+    auto vec_ = radius_ * (RotationMatrix(theta, normal()) * (m_ * normal())) * r;
+    return plane_center_ + vec_;
 }
 
 

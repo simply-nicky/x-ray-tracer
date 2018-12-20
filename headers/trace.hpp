@@ -16,17 +16,17 @@ namespace raytrace {
             double & wavelength() noexcept {return wl_; }
     };
 
-    class ExpObjects : private std::vector<std::unique_ptr<Ellipsoid>>
+    class ExpObjects : private std::vector<std::unique_ptr<ObjEllipsoid>>
     {
         public:
-            using std::vector<std::unique_ptr<Ellipsoid>>::emplace_back;
-            using iterator = boost::indirect_iterator<std::vector<std::unique_ptr<Ellipsoid>>::iterator>;
-            using const_iterator = boost::indirect_iterator<std::vector<std::unique_ptr<Ellipsoid>>::const_iterator>;
+            using std::vector<std::unique_ptr<ObjEllipsoid>>::emplace_back;
+            using iterator = boost::indirect_iterator<std::vector<std::unique_ptr<ObjEllipsoid>>::iterator>;
+            using const_iterator = boost::indirect_iterator<std::vector<std::unique_ptr<ObjEllipsoid>>::const_iterator>;
 
-            iterator begin() {return std::vector<std::unique_ptr<Ellipsoid>>::begin(); }
-            iterator end() {return std::vector<std::unique_ptr<Ellipsoid>>::end(); }
-            const_iterator begin() const {return std::vector<std::unique_ptr<Ellipsoid>>::begin(); }
-            const_iterator end() const {return std::vector<std::unique_ptr<Ellipsoid>>::end(); }
+            iterator begin() {return std::vector<std::unique_ptr<ObjEllipsoid>>::begin(); }
+            iterator end() {return std::vector<std::unique_ptr<ObjEllipsoid>>::end(); }
+            const_iterator begin() const {return std::vector<std::unique_ptr<ObjEllipsoid>>::begin(); }
+            const_iterator end() const {return std::vector<std::unique_ptr<ObjEllipsoid>>::end(); }
 
             ExpObjects() = default;
             ~ExpObjects() = default;
@@ -63,11 +63,11 @@ namespace raytrace {
             const ExpObjects & objects() const noexcept {return objs_; }
     };
 
-    class PlaneBeam : public Line
-    {
-        public:
-            PlaneBeam(const BaseEllipsoid & el, const Vector & v) noexcept : Line(el.make_point(2.0 * Constants::pi * setup::dist(setup::gen), setup::dist(setup::gen)), v.Normalize()) {} 
-    };
+    // class PlaneBeam : public Line
+    // {
+    //     public:
+    //         PlaneBeam(const BaseEllipsoid & el, const Vector & v) noexcept : Line(el.make_point(2.0 * Constants::pi * setup::dist(setup::gen), setup::dist(setup::gen)), v.Normalize()) {} 
+    // };
 
     class TestBeam : public Line
     {
